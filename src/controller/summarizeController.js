@@ -8,7 +8,7 @@ export const summarizeText = async (req, res, next) => {
       return res.status(400).json({ error: 'Text is required' });
     }
 
-    const API_URL = "https://api-inference.huggingface.co/models/sshleifer/distilbart-cnn-12-6";
+    const API_URL = "https://api-inference.huggingface.co/models/google/pegasus-xsum"
     const response = await axios.post(
       API_URL,
       { inputs: text },
@@ -23,6 +23,19 @@ export const summarizeText = async (req, res, next) => {
     const summary = response.data[0].summary_text;
     res.json({ summary });
   } catch (error) {
-    next(error);
+    if (error.response && error.response.data.error) {
+      const errorMessage = error.response.data.error;
+
+      if (errorMessage.includes("Model google/pegasus-xsum is currently loading")) {
+        const estimatedTime = error.response.data.estimated_time || 60;
+        res.status(503).json({
+          error: "An error occurred while processing your request. Please try again later. || TEST"
+        });
+      } else {
+        next(error);
+      }
+    } else {
+      next(error);
+    }
   }
 };
