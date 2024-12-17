@@ -19,7 +19,7 @@ export const summarizeText = async (req, res, next) => {
         },
       }
     );
-
+ 
     const summary = response.data[0].summary_text;
     res.json({ summary });
   } catch (error) {
@@ -29,7 +29,7 @@ export const summarizeText = async (req, res, next) => {
       if (errorMessage.includes("Model google/pegasus-xsum is currently loading")) {
         const estimatedTime = error.response.data.estimated_time || 60;
         res.status(503).json({
-          error: "An error occurred while processing your request. Please try again later. || TEST"
+          error: "An error occurred while processing your request. Please try again later."
         });
       } else {
         next(error);
